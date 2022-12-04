@@ -653,4 +653,50 @@ mod tests {
         assert!(response.is_ok());
     }
 
+    #[tokio::test]
+    async fn test_simulated_protocol() {
+        let mut manager = Manager::new(
+            "localhost".to_string(),
+            9502
+        ).await;
+        
+        let test_base_token = env::var("MINKNOW_API_TEST_TOKEN").ok().unwrap();
+        manager.channel.set_token(test_base_token);
+
+        let response = manager.create_developer_api_token(
+            "test_simulated_end_to_end".to_string()
+        ).await;
+
+        assert!(response.is_ok());
+
+        let unwrapped_response = &response.unwrap();
+        let token = unwrapped_response.token.clone();
+        let id = unwrapped_response.id.clone();
+
+        manager.channel.set_token(token);
+
+        let response = manager.add_simulated_device(
+          "MS12345".to_string(),
+          minknow_api::manager::SimulatedDeviceType::SimulatedMinion
+        ).await;
+
+        assert!(response.is_ok());
+
+        let response = manager.flow_cell_positions().await;
+        assert!(response.is_ok());
+
+        let flow_cell_positions = response.unwrap();
+        assert_eq!(flow_cell_positions.len(), 1);
+
+        let response = manager.remove_simulated_device("MS12345".to_string()).await;
+        assert!(response.is_ok());
+
+        let position_name = &flow_cell_positions[0].description.name;
+        let response = manager.reset_position("MS12345".to_string(), false).await;
+        assert!(response.is_ok());
+
+        let response = manager.revoke_developer_api_token(id).await;
+        assert!(response.is_ok());
+    }
+
 }
