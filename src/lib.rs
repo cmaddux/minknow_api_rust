@@ -606,9 +606,6 @@ mod tests {
         ).await;
 
         assert!(response.is_ok());
-
-        let unwrapped_response = &response.unwrap();
-        println!("{:?}", unwrapped_response.protocols.clone())
     }
 
     #[tokio::test]
