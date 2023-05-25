@@ -183,7 +183,7 @@ pub struct FlowCellPosition {
 impl FlowCellPosition {
     // Create a new MinKNOWChannel that will handle SSL communication with this
     // flow cell position.
-    async fn channel(&self) -> MinKNOWChannel {
+    pub async fn channel(&self) -> MinKNOWChannel {
         let cert_path = env::var("MINKNOW_TRUSTED_CA").ok().unwrap();
         let cert = tokio::fs::read(cert_path).await.ok().unwrap();
 
@@ -209,7 +209,7 @@ impl Protocol {
     // Initiates a python instance that run the script specified by the 'identifier' argument.
     // `list_protocols` will give back a list of protocol scripts that can be started by this
     // call.
-    async fn start_protocol(
+    pub async fn start_protocol(
         &self,
         identifier: String,
         args: Vec<String>,
@@ -246,7 +246,7 @@ impl Protocol {
     //
     // If NOTIFY_BEFORE_TERMINATION is specified for state, the protocol end time is an estimate,
     // including the the allowed timeout.
-    async fn wait_for_finished(
+    pub async fn wait_for_finished(
         &self,
         run_id: String,
         state: Option<minknow_api::protocol::wait_for_finished_request::NotificationState>,
@@ -292,7 +292,7 @@ impl Manager {
     //
     // More information on secure communication with the MinKNOW server can be found
     // here: https://github.com/nanoporetech/minknow_api#faqs
-    async fn new(host: String, port: u32) -> Manager {
+    pub async fn new(host: String, port: u32) -> Manager {
         let cert_path = env::var("MINKNOW_TRUSTED_CA").ok().unwrap();
         let cert = tokio::fs::read(cert_path).await.ok().unwrap();
         let uri = Uri::from_maybe_shared(format!("https://{host}:{port}")).unwrap();
@@ -302,7 +302,7 @@ impl Manager {
     }
 
     // Get information about the machine running MinKNOW.
-    async fn describe_host(&self) -> Result<DescribeHostResponse, Status> {
+    pub async fn describe_host(&self) -> Result<DescribeHostResponse, Status> {
         let channel = self.channel.clone();
 
         let mut client = MinKNOWManagerClient::new(channel);
@@ -317,7 +317,7 @@ impl Manager {
     }
 
     // Get a list of flow cell positions.
-    async fn flow_cell_positions(&self) -> Result<Vec<FlowCellPosition>, Status> {
+    pub async fn flow_cell_positions(&self) -> Result<Vec<FlowCellPosition>, Status> {
         let channel = self.channel.clone();
         let token = channel.token.clone();
 
@@ -346,7 +346,7 @@ impl Manager {
     }
 
     // Dynamically create a simulated device
-    async fn add_simulated_device(
+    pub async fn add_simulated_device(
         &self,
         name: String,
         simulated_type: minknow_api::manager::SimulatedDeviceType,
@@ -371,7 +371,7 @@ impl Manager {
     }
 
     // Dynamically remove a simulated device
-    async fn remove_simulated_device(
+    pub async fn remove_simulated_device(
         &self,
         name: String,
     ) -> Result<minknow_api::manager::RemoveSimulatedDeviceResponse, Status> {
@@ -392,7 +392,7 @@ impl Manager {
     }
 
     // Reset a flow cell position.
-    async fn reset_position(
+    pub async fn reset_position(
         &self,
         position: String,
         force: bool,
@@ -401,7 +401,7 @@ impl Manager {
     }
 
     // Reset flow cell positions.
-    async fn reset_positions(
+    pub async fn reset_positions(
         &self,
         positions: Vec<String>,
         force: bool,
@@ -425,7 +425,7 @@ impl Manager {
     // Create a new developer api token, which expires at [expiry]
     //
     // Cannot be invoked when using a developer token as authorisation method.
-    async fn create_developer_api_token(
+    pub async fn create_developer_api_token(
         &self,
         name: String,
     ) -> Result<minknow_api::manager::CreateDeveloperApiTokenResponse, Status> {
@@ -449,7 +449,7 @@ impl Manager {
     }
 
     // Revoke an existing developer API token.
-    async fn revoke_developer_api_token(
+    pub async fn revoke_developer_api_token(
         &self,
         id: String,
     ) -> Result<minknow_api::manager::RevokeDeveloperApiTokensResponse, Status> {
@@ -470,7 +470,7 @@ impl Manager {
     }
 
     // List existing developer API tokens.
-    async fn list_developer_api_tokens(
+    pub async fn list_developer_api_tokens(
         &self,
     ) -> Result<minknow_api::manager::ListDeveloperApiTokensResponse, Status> {
         let channel = self.channel.clone();
@@ -490,7 +490,7 @@ impl Manager {
     }
 
     // List available protocols for the given experiment type.
-    async fn find_protocols(
+    pub async fn find_protocols(
         &self,
         experiment_type: minknow_api::manager::ExperimentType,
     ) -> Result<minknow_api::manager::FindProtocolsResponse, Status> {
