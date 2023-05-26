@@ -14,7 +14,7 @@ use hyper::{
 
 use hyper_openssl::HttpsConnector;
 use openssl::{
-    ssl::{SslConnector, SslMethod},
+    ssl::{SslConnector, SslMethod, SslVerifyMode},
     x509::X509,
 };
 
@@ -113,7 +113,7 @@ impl MinKNOWChannel {
 
         let mut https = HttpsConnector::with_connector(http, connector)?;
         https.set_callback(|c, _| {
-            c.set_verify_hostname(false);
+            c.set_verify(SslVerifyMode::NONE);
             Ok(())
         });
 
@@ -440,7 +440,7 @@ impl Manager {
         let response = match client.create_developer_api_token(request).await {
             Ok(response) => response.into_inner(),
             Err(err) => {
-                println!("{:?}", err);
+                println!("ERROR: {:?}", err);
                 return Err(Status::unavailable("Not available"));
             }
         };
