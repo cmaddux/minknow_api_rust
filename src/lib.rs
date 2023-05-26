@@ -440,7 +440,7 @@ impl Manager {
         let response = match client.create_developer_api_token(request).await {
             Ok(response) => response.into_inner(),
             Err(err) => {
-                println!("ERROR: {:?}", err);
+                println!("{:?}", err);
                 return Err(Status::unavailable("Not available"));
             }
         };
