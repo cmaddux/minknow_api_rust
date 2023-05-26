@@ -236,6 +236,28 @@ impl Protocol {
         Ok(response)
     }
 
+    // Retrieve run information for a specific run id.
+    //
+    // If no run has been started with the provided run ID (or no run ID is given), and error is
+    // returned.
+    pub async fn get_run_info(
+        &self,
+        run_id: String,
+    ) -> Result<minknow_api::protocol::ProtocolRunInfo, Status> {
+        let channel = self.channel.clone();
+
+        let mut client = MinKNOWProtocolClient::new(channel);
+
+        let request = Request::new(minknow_api::protocol::GetRunInfoRequest { run_id: run_id });
+
+        let response = match client.get_run_info(request).await {
+            Ok(response) => response.into_inner(),
+            Err(err) => return Err(Status::unavailable("Not available")),
+        };
+
+        Ok(response)
+    }
+
     // Wait for a protocol run to finish.
     //
     // This call blocks until the run with the given run ID has finished (or returns immediately
@@ -625,6 +647,10 @@ mod tests {
 
         let unwrapped_response = &response.unwrap();
         let run_id = unwrapped_response.run_id.clone();
+
+        let response = protocol.get_run_info(run_id.clone()).await;
+        assert!(response.is_ok());
+
         let response = protocol.wait_for_finished(run_id, None, 10000.0).await;
         assert!(response.is_ok());
 
