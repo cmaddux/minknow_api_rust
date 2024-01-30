@@ -13,14 +13,14 @@ repository = "https://github.com/dayzerodx/minknow_api_rust"
 doctest = false
 
 [dependencies]
-tonic = { version = "0.8", features = ["transport", "tls", "tls-roots", "tls-webpki-roots"] }
+tonic = { version = "0.9", features = ["transport", "tls", "tls-roots", "tls-webpki-roots"] }
 prost = "0.11"
 prost-types = "0.11"
 futures-core = "0.3"
 futures-util = "0.3"
 tokio = { version = "1.22", features = ["macros", "rt-multi-thread", "fs"] }
 tokio-stream = { version = "0.1", features = ["net"] }
-tonic-openssl = "0.2"
+tonic-openssl = "0.2.0"
 async-stream = "0.3"
 tower = "0.4"
 hyper-openssl = "0.9"
@@ -32,4 +32,4 @@ rand = "0.7"
 lazy_static = "1.4"
 
 [build-dependencies]
-tonic-build = "0.8"
+tonic-build = "0.9"
